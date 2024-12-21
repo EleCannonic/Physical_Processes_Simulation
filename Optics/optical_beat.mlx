@@ -1,0 +1,53 @@
+clear;
+% parameter setting, you can modify
+A1 = 1;                   % amplitude 1
+A2 = 1.1;                 % amplitude 2
+k1x = 2*pi/15;            % wave vector 1, x component
+k1y = 2*pi/1.0;           % wave vector 1, y component
+k2x = 2*pi/1.0;           % wave vector 2, x component
+k2y = 2*pi/1.5;           % wave vector 2, y component
+omega1 = 2 * pi * 1005;   % frequency 1
+omega2 = 2 * pi * 1000;   % frequency 2
+
+% define the observation size
+L = 20;
+% resolution
+N = 100;
+
+% observation time (unit: s)
+t_max = 10; 
+% number of frames in total
+frames = 200;
+
+x = linspace(-L/2, L/2, N);
+y = linspace(-L/2, L/2, N);
+[X, Y] = meshgrid(x, y);
+
+% figure creating
+figure;
+axis tight;
+zlim([-2, 2]);
+xlabel('X');
+ylabel('Y');
+zlabel('Amplitude');
+colorbar;
+
+% dynamic for-loop
+for t = linspace(0, t_max, frames)
+    
+    % wave function of two lights
+    E1 = A1 * cos(k1x * X + k1y * Y - omega1 * t);  
+    E2 = A2 * cos(k2x * X + k2y * Y - omega2 * t);  
+    
+    % summation, here if A1 == A2 ,there will be some points of value 0,
+    % meaning completely interfere; if omega1 == omega2, the interfere
+    % pattern will not move; the larger abs(omega1 - omega2) is, the faster
+    % the pattern moves, the sign of omega1 - omega2 decides the direction
+    % of motion of the pattern.
+    E_total = abs(E2 + E1);
+
+    contourf(X, Y, E_total, 'EdgeColor', 'none');
+    colormap(flipud(gray))
+    title(['Time: ', num2str(t, '%.2f'), ' s']);
+    drawnow;
+end
