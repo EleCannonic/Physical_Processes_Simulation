@@ -6,5 +6,3 @@ This project is continually updated but non-scheduled.
 
 # Content
 - Opical beat, updated on Dec 21th, 2024
-- Diffraction, updated on Dec 21th, 2024
-- Interfere of two sinusodial waves, updated on Dec 21th, 2024
