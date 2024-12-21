@@ -6,3 +6,5 @@ This project is continually updated but non-scheduled.
 
 # Content
 - Opical beat, updated on Dec 21th, 2024
+
+(I'm just an undergraduate. If there are errors, feel free to raise issue.)
