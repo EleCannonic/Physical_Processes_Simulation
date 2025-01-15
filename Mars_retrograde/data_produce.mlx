@@ -1,0 +1,25 @@
+clear;
+% public parameter definition
+G = 6.6743E-11;
+M_sun = 1.9885E30;
+mu = G * M_sun;
+
+% private parameter definition
+% Earth
+a_e = 1.496E11;
+e1 = 0.0167;
+b_e = a_e * sqrt(1 - e1^2);
+n_e = sqrt(mu / a_e^3);
+p_e = b_e^2 / a_e;
+
+% Mars
+a_m = 2.279E11;
+e2 = 0.0934;
+b_m = a_m * sqrt(1 - e2^2);
+n_m = sqrt(mu / a_m^3);
+p_m = a_m^2 / b_m;
+
+% derivation angle of mars trajectory plane
+mars_angle = 1.85 *  pi / 180;
+
+save data_produce.mat
