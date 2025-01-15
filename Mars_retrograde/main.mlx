@@ -1,0 +1,92 @@
+% Simulation of Mars retrograde
+clear;
+load data_produce.mat
+
+% define equation of motion
+% motion for Earth
+omega_e = @(theta1) n_e / ((1 - e1^2))^(3/2) * (1 + e1 * cos(theta1)).^2;
+
+% motion for Mars
+omega_m = @(theta2) n_m / ((1 - e2^2))^(3/2) * (1 + e2 * cos(theta2)).^2;
+
+% To solve them in the same time axis, combine into a matrix
+dydt = @(t, y)[omega_e(y(1)); omega_m(y(2))];
+
+% Solve the equations
+% initial condition
+theta1_0 = 0;
+theta2_0 = 0;
+
+% range
+t_step = 1; % day
+t_max = 20; % years
+tspan = [0, t_max*365.25 * 24 * 3600];
+
+% set ode solution speed
+options = odeset("RelTol", 1e-4, "AbsTol", 1e-6, "MaxStep", t_step*1*24*3600);
+
+% Solve
+[t, theta] = ode45(dydt, tspan, [theta1_0; theta2_0], options);
+t = t / (24*3600);
+
+% extract theta data into different vectors
+theta_earth = theta(:, 1);
+theta_mars = theta(:, 2);
+
+% define trajectory equation
+r_earth = @(theta1) p_e ./ (1 + e1 .* cos(theta1));
+r_mars = @(theta2) p_m ./ (1 + e2 .* cos(theta2));
+
+% calculate r related to theta
+r_e = r_earth(theta_earth);
+r_m = r_mars(theta_mars);
+
+% transform into Descartes coordinate
+% earth
+x_e = r_e .* cos(theta_earth);
+y_e = r_e .* sin(theta_earth);
+z_e = zeros(length(theta_earth), 1);
+
+place_e = [x_e, y_e, z_e]';
+
+% mars
+x_m_sun = r_m .* cos(theta_mars);
+y_m_sun = r_m .* sin(theta_mars);
+z_m_sun = zeros(length(theta_mars), 1);
+
+place_m_sun = [x_m_sun, y_m_sun, z_m_sun]';
+
+% rotate trajectory of mars
+% define rotation matrix, the trajectories has common main axis on the
+% projection plane
+R = ...
+[1,                0,               0;
+ 0,  cos(mars_angle), -sin(mars_angle);
+ 0,  sin(mars_angle), cos(mars_angle)];
+
+% rotate
+place_m = R * place_m_sun;
+x_m = place_m(1, :)';
+y_m = place_m(2, :)';
+z_m = place_m(3, :)';
+
+% relative position
+place_rel = place_m - place_e;
+x_rel = place_rel(1,:);
+y_rel = place_rel(2,:);
+z_rel = place_rel(3,:);
+
+% cylindrial 
+theta_rel = unwrap(atan2(y_rel, x_rel));
+r_fix = 5E11;
+x_fix = r_fix * cos(theta_rel);
+y_fix = r_fix * sin(theta_rel);
+
+% Retrograde duration and interval detect
+[retro_duration, retro_interval] = retro_detect(theta_rel, t);
+disp("Retrograde Time Duration (unit: d)")
+disp(retro_duration)
+disp("Retrograde Time Interval (unit: d)")
+disp(retro_interval)
+
+save calculated_data.mat
