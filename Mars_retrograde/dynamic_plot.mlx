@@ -1,0 +1,202 @@
+clear;
+load calculated_data.mat
+
+v1 = VideoWriter("xy_projection.mp4", "MPEG-4");
+v2 = VideoWriter("yz_projection.mp4", "MPEG-4");
+v3 = VideoWriter("xz_projection.mp4", "MPEG-4");
+v4 = VideoWriter("cylindrial_projection.mp4", "MPEG-4");
+v5 = VideoWriter("relatve_earth.mp4", "MPEG-4");
+v6 = VideoWriter("relative_sun.mp4", "MPEG-4");
+
+v1.FrameRate = 30;
+v2.FrameRate = 30;
+v3.FrameRate = 30;
+v4.FrameRate = 30;
+v5.FrameRate = 30;
+v6.FrameRate = 30;
+
+open(v1);
+open(v2);
+open(v3);
+open(v4);
+open(v5);
+open(v6);
+
+% planar projection
+% To xy plane
+figure;
+for i = 1:length(x_rel)
+    plot(x_rel(1:i), y_rel(1:i), "-", "LineWidth", 2);
+    hold on
+    set(gca, "FontSize", 20, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    plot(x_rel(i), y_rel(i), ".", "MarkerSize", 20);
+    xlabel("x/m");
+    ylabel("y/m", "rotation", 0);
+    title("Projection on xy Plane");
+    axis([-4.1E11, 4E11, -4E11, 4E11]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v1, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v1);
+
+% planar projection
+% To yz plane
+figure;
+for i = 1:length(y_rel)
+    plot(y_rel(1:i), z_rel(1:i), "-", "LineWidth", 2);
+    hold on
+    set(gca, "FontSize", 20, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    plot(y_rel(i), z_rel(i), ".", "MarkerSize", 20);
+    xlabel("y/m");
+    ylabel("z/m", "rotation", 0);
+    title("Projection on yz Plane");
+    axis([-4E11, 4E11, -8E9, 8E9]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v2, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v2);
+
+% planar projection
+% To xz plane
+figure;
+for i = 1:length(y_rel)
+    plot(x_rel(1:i), z_rel(1:i), "-", "LineWidth", 2);
+    hold on
+    set(gca, "FontSize", 20, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    plot(x_rel(i), z_rel(i), ".", "MarkerSize", 20);
+    xlabel("x/m");
+    ylabel("z/m", "rotation", 0);
+    title("Projection on xz Plane");
+    axis([-4.1E11, 4E11, -8E9, 8E9]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v3, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v3);
+
+% project to z-theta
+figure;
+for i = 1:length(x_fix)
+    % draw reference grid
+    theta_ref = linspace(-pi, pi, 50);
+    z_ref = linspace(-5E9, 5E9, 25);
+    [THETA_ref, Z_ref] = meshgrid(theta_ref, z_ref);
+    X_ref = r_fix * cos(THETA_ref);
+    Y_ref = r_fix * sin(THETA_ref);
+    mesh(X_ref, Y_ref, Z_ref, "EdgeColor", "k", "FaceColor", "none");
+    hold on
+
+    plot3(x_fix(1:i), y_fix(1:i), z_rel(1:i), "-", "LineWidth", 2);
+    hold on
+    grid on
+    set(gca, "FontSize", 20, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    plot3(x_fix(i), y_fix(i), z_rel(i), ".", "MarkerSize", 20);
+    xlabel("x/m");
+    ylabel("y/m", "rotation", 0);
+    title("Projection on Cylindrcial Surface");
+    axis([-5.2E11, 5.2E11, -5.2E11, 5.2E11, -8E9, 8E9]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v4, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v4);
+
+
+% plotting position relative to Earth
+figure;
+
+for i = 1:length(x_rel)
+    plot3(0, 0, 0, ".", "Color", "b", "MarkerSize", 30);
+    hold on
+    plot3(x_rel(1:i), y_rel(1:i), z_rel(1:i), "r-", "LineWidth", 2);
+    set(gca, "FontSize", 15, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    % emphasizing current position
+    plot3(x_rel(i), y_rel(i), z_rel(i), "r.", "MarkerSize", 20);
+
+    legend(["Earth", "Mars Trajectory"], "Position", [0.8, 0.8, 0.15, 0.1]);
+    grid on;
+    xlabel("x/m");
+    ylabel("y/m");
+    zlabel("z/m");
+    title("Trajectory of Earth and Mars Relative to Earth");
+    axis([-4.5E11, 4.5E11, -4.5E11, 4.5E11, -8E9, 8E9]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v5, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v5);
+
+% plotting position relative to Sun
+figure;
+for i = 1:length(place_e)
+    plot3(0, 0, 0, ".", "Color", "yellow", "MarkerSize", 30);
+    hold on
+    plot3(x_e(1:i), y_e(1:i), z_e(1:i), "b-", "LineWidth", 2);
+    plot3(x_m(1:i), y_m(1:i), z_m(1:i), "r-", "LineWidth", 2);
+    set(gca, "FontSize", 15, "FontName", "Times New Roman");
+    set(gcf, "Position", [100, 100, 800, 600]);
+
+    % emphasizing current position
+    plot3(x_e(i), y_e(i), z_e(i), "b.", "MarkerSize", 20);
+    plot3(x_m(i), y_m(i), z_m(i), "r.", "MarkerSize", 20);
+
+    legend(["Sun", "Earth Trajectory", "Mars Trajectory"], "Position", [0.8, 0.8, 0.15, 0.1]);
+    grid on
+    xlabel("x/m");
+    ylabel("y/m");
+    zlabel("z/m");
+    title("Trajectory of Earth and Mars Relative to Sun");
+    axis([-3E11, 2.5E11, -2.5E11, 2.5E11, -8E9, 8E9]);
+
+    pause(0.01)
+    frame = getframe(gcf);
+    writeVideo(v6, frame);
+
+    drawnow;
+    hold off
+end
+hold off
+
+close(v6);         
