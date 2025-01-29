@@ -6,5 +6,6 @@ This project is continually updated but non-scheduled.
 
 # Content
 - Opical beat, updated on Dec 21th, 2024
+- Mars_Retrograde, updated on Jan 15th, 2025
 
 (I'm just an undergraduate. If there are errors, feel free to raise issue.)
