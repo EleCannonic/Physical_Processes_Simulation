@@ -1,0 +1,43 @@
+clear;
+clc;
+% initializing
+num_particles = 1e3:1e3:3e4;
+energy_avg_list = zeros(length(num_particles), 1);
+energy_flu_list = zeros(length(num_particles), 1);
+num_in_region_list = zeros(1, length(num_particles));
+
+% parameter setting
+box_size = [1, 1, 1];
+dt = 1e-3; 
+time_length = 1; 
+measure_region = [0, 0, 0, 1, 1, 0.5]; 
+T = 300;
+
+% calculate energy and number at each time point
+for i = 1:length(num_particles)
+    [energy_avg, energy_flu, num_in_region] = simulate_energy(num_particles(i), box_size, dt, time_length, measure_region, T);
+    % take value at the end for stability
+    energy_avg_list(i) = energy_avg(end);  % Final energy average
+    energy_flu_list(i) = energy_flu(end);  % Final energy fluctuation
+    num_in_region_list(i) = num_in_region(end);
+end
+
+% plot energy vs. number of particles
+yyaxis left
+plot(num_particles, energy_avg_list, '-o');
+xlabel('Number of Particles (N)');
+ylabel('Energy Average');
+title('Energy Average vs N');
+grid on;
+hold on
+
+yyaxis right
+plot(num_particles, energy_flu_list, '-o');
+xlabel('Number of Particles (N)');
+ylabel('Energy Fluctuation');
+title('Energy Fluctuation vs N');
+grid on;
+
+hold off
+
+legend(["Average Energy", "Energy Fluctuation"])
